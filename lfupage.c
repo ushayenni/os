@@ -1,136 +1,61 @@
 #include <stdio.h>
-#include <stdlib.h>
-
-void worstFit(int blockSize[], int m, int processSize[], int n) {
-    int allocation[n];
-   
-    for (int i = 0; i < n; i++)
-        allocation[i] = -1;
-
-    for (int i = 0; i < n; i++) {
-        int worstIdx = -1;
-        for (int j = 0; j < m; j++) {
-            if (blockSize[j] >= processSize[i]) {
-                if (worstIdx == -1 || blockSize[j] > blockSize[worstIdx])
-                    worstIdx = j;
+int main() {
+    int total_frames, total_pages, hit = 0;
+    int frame[10], pages[25], arr[25] = {0}, time[25] = {0};
+    int m, n, temp, flag, k, minimum_time;
+    printf("Enter the number of pages: ");
+    scanf("%d", &total_pages);
+    printf("Enter total number of frames: ");
+    scanf("%d", &total_frames);
+    for (m = 0; m < total_frames; m++) {
+        frame[m] = -1;
+    }
+    printf("Enter values of reference string:\n");
+    for (m = 0; m < total_pages; m++) {
+        printf("Enter value no.[%d]: ", m + 1);
+        scanf("%d", &pages[m]);
+    }
+    printf("\n");
+    for (m = 0; m < total_pages; m++) {
+        arr[pages[m]]++;        
+        time[pages[m]] = m;      
+        flag = 1;
+                for (n = 0; n < total_frames; n++) {
+            if (frame[n] == pages[m]) {
+                hit++;
+                flag = 0; 
+                break;
+            } else if (frame[n] == -1) {
+                frame[n] = pages[m];
+                flag = 0;
+                break;
             }
         }
-
-        if (worstIdx != -1) {
-            allocation[i] = worstIdx;
-            blockSize[worstIdx] -= processSize[i];
-        }
-    }
-
-    printf("Process No.\tProcess Size\tBlock No.\n");
-    for (int i = 0; i < n; i++) {
-        printf("%d\t\t%d\t\t", i, processSize[i]);
-        if (allocation[i] != -1)
-            printf("%d\n", allocation[i]);
-        else
-            printf("Not Allocated\n");
-    }
-}
-
-int main() {
-    int i, bs, p, blockSize[10], processSize[10];
-
-    printf("Enter no. of blocks: ");
-    scanf("%d", &bs);
-    for (i = 0; i < bs; i++) {
-        printf("Enter %d block size: ", i);
-        scanf("%d", &blockSize[i]);
-    }
-
-    printf("Enter no. of processes: ");
-    scanf("%d", &p);
-    for (i = 0; i < p; i++) {
-        printf("Enter %d process size: ", i);
-        scanf("%d", &processSize[i]);
-    }
-
-    worstFit(blockSize, bs, processSize, p);
-
-    return 0;
-}
-worst fit
-
-teja saladi, 10:10 AM
-Enter no. of blocks: 5
-Enter 0 block size: 100
-Enter 1 block size: 500
-Enter 2 block size: 200
-Enter 3 block size: 300
-Enter 4 block size: 600
-Enter no. of processes: 4
-Enter 0 process size: 212
-Enter 1 process size: 417
-Enter 2 process size: 112
-Enter 3 process size: 426
-Process No. Process Size Block No.
-0 212 4
-1 417 1
-2 112 4
-3 426 Not Allocated
-aim: implement the memory allocation method for fixed partition of 
-worst fit
-
-
-ReplyForward
-
-teja saladi, 10:14 AM
-#include <stdio.h>
-#include <stdlib.h>
-
-void worstFit(int blockSize[], int m, int processSize[], int n) {
-    int allocation[n];
-   
-    for (int i = 0; i < n; i++)
-        allocation[i] = -1;
-
-    for (int i = 0; i < n; i++) {
-        int worstIdx = -1;
-        for (int j = 0; j < m; j++) {
-            if (blockSize[j] >= processSize[i]) {
-                if (worstIdx == -1 || blockSize[j] > blockSize[worstIdx])
-                    worstIdx = j;
+                if (flag) {
+            k = frame[0];
+            for (n = 1; n < total_frames; n++) {
+                if (arr[frame[n]] < arr[k] || 
+                   (arr[frame[n]] == arr[k] && time[frame[n]] < time[k])) {
+                    k = frame[n];
+                }
+            }
+                     for (n = 0; n < total_frames; n++) {
+                if (frame[n] == k) {
+                    arr[frame[n]] = 0;
+                    frame[n] = pages[m];
+                    break;
+                }
             }
         }
-
-        if (worstIdx != -1) {
-            allocation[i] = worstIdx;
-            blockSize[worstIdx] -= processSize[i];
+              for (n = 0; n < total_frames; n++) {
+            if (frame[n] != -1)
+                printf("%d\t", frame[n]);
+            else
+                printf("-\t");
         }
+        printf("\n");
     }
-
-    printf("Process No.\tProcess Size\tBlock No.\n");
-    for (int i = 0; i < n; i++) {
-        printf("%d\t\t%d\t\t", i, processSize[i]);
-        if (allocation[i] != -1)
-            printf("%d\n", allocation[i]);
-        else
-            printf("Not Allocated\n");
-    }
-}
-
-int main() {
-    int i, bs, p, blockSize[10], processSize[10];
-
-    printf("Enter no. of blocks: ");
-    scanf("%d", &bs);
-    for (i = 0; i < bs; i++) {
-        printf("Enter %d block size: ", i);
-        scanf("%d", &blockSize[i]);
-    }
-
-    printf("Enter no. of processes: ");
-    scanf("%d", &p);
-    for (i = 0; i < p; i++) {
-        printf("Enter %d process size: ", i);
-        scanf("%d", &processSize[i]);
-    }
-
-    worstFit(blockSize, bs, processSize, p);
-
+    printf("Page Hit:\t%d\n", hit);
+    printf("Page Fault:\t%d\n", total_pages - hit);
     return 0;
 }
